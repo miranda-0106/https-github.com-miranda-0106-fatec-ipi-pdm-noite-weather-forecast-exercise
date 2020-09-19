@@ -6,34 +6,51 @@ import {
   TextInput, 
   View, 
   Button, 
-  Keyboard 
+  Keyboard
 } from 'react-native';
 
-import PrevisaoItem from './components/Previsaoitem';
+import PrevisaoItem from './components/PrevisaoItem';
+import Cartao from './components/Cartao';
+import DadosCidade from './components/DadosCidade';
 
 export default function App() {
 
   const [cidade, setCidade] = useState ('');
   const [previsoes, setPrevisoes] = useState ([]);
+  const [dadosCidade, setDadosCidade] = useState ({});
+  const [infoCidade, setInfoCidade] = useState({ current: {}, cidade: {} });
 
   const capturarCidade = (cidade) => {
     setCidade(cidade);
   }
 
+  const obterinfoCidade = (coord) => {
+    const target = `${endPoint}${oneCall}&lat=${coord.lat}&lon=${coord.lon}&appid=${apiKey}`;
+    fetch(target)
+      .then((dados) => {
+        return dados.json()
+      })
+      .then((dados) => {
+        setInfoCidade(dados);
+      })
+  }
+
   const obterPrevisoes = () => {
     setPrevisoes([]);
-    const target = endPoint + cidade + "&appid=" + apiKey;
-    fetch(target)
-    .then((dados) => dados.json())
-    .then((dados) => {
-      setPrevisoes (dados)
+    const target = `${endPoint}${forecast}&q=${cidade}&appid=${apiKey}`;
+    fetch(target).then((dados) => dados.json()).then((dados) => {
+      setPrevisoes (dados["list"])
+      setDadosCidade (dados["city"])
+      obterinfoCidade(dados["city"]['coord'])
       Keyboard.dismiss()
     });
-    console.log(previsoes.toString());
   };
 
-  const endPoint = "https://api.openweathermap.org/data/2.5/forecast?lang=pt_br&units=metric&q="
+  const endPoint = "https://api.openweathermap.org/data/2.5";
   const apiKey = '600c63cc8d1080b996d777f746edd5a2';
+  const forecast = "/forecast?lang=pt_br&units=metric";
+  const oneCall = "/onecall?lang=pt_br&units=metric";
+
   return (
     <View style={styles.container}>
       <View style={styles.entrada}>
@@ -48,11 +65,15 @@ export default function App() {
           onPress={obterPrevisoes}
         />
       </View>
+      <View>
+        <DadosCidade infoCidade={infoCidade} cidade={dadosCidade} estilos={styles}/>
+      </View>
       <FlatList 
         data={previsoes}
+        keyExtractor={(item) => item.dt_txt}  
         renderItem={
-          previsao => (
-            <PrevisaoItem previsao={previsao.item} />
+          ({ item }) => (
+            <PrevisaoItem previsao={item} />
           )
         }
       />

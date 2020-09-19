@@ -8,28 +8,6 @@ import {
 import Cartao from './Cartao';
 
 const PrevisaoItem = (props) => {
-
-    console.log(props.previsao);
-
-    /*const [previsoes, setPrevisoes] = useState ([]);
-
-    console.log('oi');
-
-    const lat = props.previsao.city.coord.lat
-    const lon = props.previsao.city.coord.lon
-    const url = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&exclude=hourly,daily&appid=600c63cc8d1080b996d777f746edd5a2";
-
-        setPrevisoes([]);
-        const target = url;
-        fetch(target)
-        .then((dados) => dados.json())
-        .then((dados) => {
-          setPrevisoes (dados["list"])
-          Keyboard.dismiss()
-        });
-
-    const value = obterPrevisoes.setPrevisoes;*/
-
     return (
         <Cartao estilos={estilos.cartao}>
             <View style={estilos.tela}>
